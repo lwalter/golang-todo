@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"github.com/lwalter/lessonshare-api/src/handlers"
 )
 
@@ -17,10 +18,12 @@ func main() {
 	apiVersion := "v1"
 
 	// Routes
-	router.HandleFunc(apiPrefix+apiVersion+"/lessons", handlers.GetLessons).Methods("GET")
-	router.HandleFunc(apiPrefix+apiVersion+"/lessons/{id}", handlers.GetLesson).Methods("GET")
+	router.HandleFunc("/ping", handlers.Ping).Methods("GET")
+	router.HandleFunc("/"+apiPrefix+"/"+apiVersion+"/lessons", handlers.GetLessons).Methods("GET")
+	router.HandleFunc("/"+apiPrefix+"/"+apiVersion+"/lessons/{id}", handlers.GetLesson).Methods("GET")
 
-	if err := http.ListenAndServe(":"+strconv.Itoa(port), router); err != nil {
+	p := strconv.Itoa(port)
+	if err := http.ListenAndServe(":"+p, router); err != nil {
 		log.Fatal(err)
 	}
 }
