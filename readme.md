@@ -1,11 +1,13 @@
 # Lessonshare API
 REST API for surfacing Lessonshare data; written in Golang.
 
-- [ ] Introduce Postgresql
+- [x] Introduce Postgresql
+- [x] Config
+- [ ] Abstract response logic from handlers
 - [ ] User auth (jwt, oauth 2 with google/fb login)
 - [ ] Logging
 - [ ] Error handling
-
+- [ ] Expand on API functionality
 
 ## Installation
 * To start the REST API run ```go run main.go``` in a terminal window

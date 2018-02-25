@@ -43,6 +43,7 @@ func GetLesson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if lesson != nil {
+		w.Header().Set("Content-Type", "application-json")
 		json.NewEncoder(w).Encode(lesson)
 	} else {
 		http.Error(w, "Not found", 404)

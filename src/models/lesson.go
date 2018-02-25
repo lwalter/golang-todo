@@ -6,7 +6,7 @@ import (
 	"github.com/lib/pq"
 )
 
-// Lesson bleh
+// Lesson data entity
 type Lesson struct {
 	ID          int          `json:"id"`
 	Name        string       `json:"name"`

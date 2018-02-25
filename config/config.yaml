@@ -1,0 +1,9 @@
+db:
+  name: myapp
+  user: myapp
+  pass: dbpass
+  host: localhost
+  port: 15432
+  sslMode: false
+app:
+  port: 8080
