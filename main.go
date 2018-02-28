@@ -7,30 +7,34 @@ import (
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	cfg "github.com/lwalter/lessonshare-api/src/config"
+	app "github.com/lwalter/lessonshare-api/src/app"
 	"github.com/lwalter/lessonshare-api/src/data"
 	"github.com/lwalter/lessonshare-api/src/handlers"
+	"github.com/lwalter/lessonshare-api/src/middleware"
 )
 
-func initApi() *mux.Router {
+func initAPI() *mux.Router {
 	router := mux.NewRouter()
 
-	apiNs := "api"
-	apiV := "v1"
+	ns := "api"
+	v1 := "v1"
 
 	// Routes
-	router.HandleFunc("/ping", handlers.Ping).Methods("GET")
-	router.HandleFunc("/"+apiNs+"/"+apiV+"/lessons", handlers.GetLessons).Methods("GET")
-	router.HandleFunc("/"+apiNs+"/"+apiV+"/lessons/{id}", handlers.GetLesson).Methods("GET")
+	pingHandler := http.HandlerFunc(handlers.Ping)
+	getLessonsHandler := http.HandlerFunc(handlers.GetLessons)
+	router.Handle("/ping", middleware.LogRequest(pingHandler)).Methods("GET")
+	router.Handle("/"+ns+"/"+v1+"/lessons", middleware.LogRequest(getLessonsHandler)).Methods("GET")
+	router.HandleFunc("/"+ns+"/"+v1+"/lessons/{id}", handlers.GetLesson).Methods("GET")
 
 	return router
 }
 
 func main() {
-	cfg.LoadConfig()
+	app.LoadConfig()
 	data.InitDbConn()
-	router := initApi()
-	p := strconv.Itoa(cfg.Config.App.Port)
+	app.InitLog()
+	router := initAPI()
+	p := strconv.Itoa(app.Config.App.Port)
 
 	if err := http.ListenAndServe(":"+p, router); err != nil {
 		log.Fatal(err)

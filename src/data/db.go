@@ -5,15 +5,15 @@ import (
 	"log"
 	"strconv"
 
-	c "github.com/lwalter/lessonshare-api/src/config"
+	app "github.com/lwalter/lessonshare-api/src/app"
 )
 
 var db *sql.DB
 
 func InitDbConn() {
-	connStr := "postgres://" + c.Config.Db.User + ":" + c.Config.Db.Pass + "@" + c.Config.Db.Host + ":" + strconv.Itoa(c.Config.Db.Port) + "/" + c.Config.Db.Name + "?sslmode="
+	connStr := "postgres://" + app.Config.Db.User + ":" + app.Config.Db.Pass + "@" + app.Config.Db.Host + ":" + strconv.Itoa(app.Config.Db.Port) + "/" + app.Config.Db.Name + "?sslmode="
 
-	if c.Config.Db.SslMode {
+	if app.Config.Db.SslMode {
 		connStr += "enable"
 	} else {
 		connStr += "disable"
