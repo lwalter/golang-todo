@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	app "github.com/lwalter/lessonshare-api/src/app"
@@ -20,11 +22,12 @@ func initAPI() *mux.Router {
 	v1 := "v1"
 
 	// Routes
-	pingHandler := http.HandlerFunc(handlers.Ping)
-	getLessonsHandler := http.HandlerFunc(handlers.GetLessons)
-	router.Handle("/ping", middleware.LogRequest(pingHandler)).Methods("GET")
-	router.Handle("/"+ns+"/"+v1+"/lessons", middleware.LogRequest(getLessonsHandler)).Methods("GET")
-	router.HandleFunc("/"+ns+"/"+v1+"/lessons/{id}", handlers.GetLesson).Methods("GET")
+	pingHandler := middleware.Adapt(http.HandlerFunc(handlers.Ping), middleware.PanicRecovery, middleware.LogRequest)
+	getLessonsHandler := middleware.Adapt(http.HandlerFunc(handlers.GetLessons), middleware.PanicRecovery, middleware.LogRequest)
+	getLessonHandler := middleware.Adapt(http.HandlerFunc(handlers.GetLesson), middleware.PanicRecovery, middleware.LogRequest)
+	router.Handle("/ping", pingHandler).Methods("GET")
+	router.Handle("/"+ns+"/"+v1+"/lessons", getLessonsHandler).Methods("GET")
+	router.Handle("/"+ns+"/"+v1+"/lessons/{id}", getLessonHandler).Methods("GET")
 
 	return router
 }
@@ -36,6 +39,8 @@ func main() {
 	router := initAPI()
 	p := strconv.Itoa(app.Config.App.Port)
 
+	address := fmt.Sprintf(":%v", p)
+	logrus.Info(fmt.Sprintf("server started at %v\n", address))
 	if err := http.ListenAndServe(":"+p, router); err != nil {
 		log.Fatal(err)
 	}
